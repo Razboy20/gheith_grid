@@ -37,7 +37,9 @@ export default function Table(props: TableProps) {
     min: 10000,
     interval: 10000,
   });
-  const [avgScore, setAvgScore] = createSignal("");
+  const avgScore = () => {
+    return props.submissions.reduce((acc, sub) => acc + sub.score, 0) / props.submissions.length;
+  };
   const [weightedFirst, setWeightedFirst] = createSignal(false);
 
   const [sortedTests, setSortedTests] = createStore<Test[]>([]);
@@ -62,7 +64,7 @@ export default function Table(props: TableProps) {
         <thead class="sticky top-0 bg-gray-200 z-5">
           <tr>
             <th colspan="9999">
-              Generated {timeAgo()}, avg score: {avgScore()}
+              Generated {timeAgo()}, avg score: {Math.round(avgScore() * 10) / 10}
             </th>
           </tr>
           <tr>
