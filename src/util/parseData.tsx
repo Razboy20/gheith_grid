@@ -37,8 +37,8 @@ export async function parseData(html: string) {
   );
 
   const testTable = root.querySelectorAll("table")[2]!;
-  const inputTestEls = testTable.querySelectorAll("tr:nth-child(1) pre > a");
-  const outputTestEls = testTable.querySelectorAll("tr:nth-child(2) pre > a");
+  const inputTestEls = testTable.querySelectorAll("tr:nth-child(1) a");
+  const outputTestEls = testTable.querySelectorAll("tr:nth-child(2) a");
 
   const testCases: Test[] = ([...inputTestEls] as HTMLAnchorElement[]).map((a, i) => ({
     name: a.title.split(".")[0],
@@ -50,16 +50,19 @@ export async function parseData(html: string) {
   }));
 
   // update weights
-  const weightRows = root.querySelectorAll("tbody")[4].querySelectorAll("tr");
+  const weightRows = Array.from(root.querySelectorAll("table.weights tr")).slice(1, -1);
   for (const row of weightRows) {
-    const weight = parseInt(row.querySelector("td:nth-child(2)")!.textContent!);
-    const testName = row.querySelector("td:nth-child(1)")!.textContent!;
+    const cols = row.children;
+    const testName = cols[0].textContent!;
+    const weight = parseInt(cols[1].textContent!);
     const test = testCases.find((t) => t.name === testName);
     if (test) test.weight = weight;
   }
 
   // read submissions
-  const rows = [...testTable.querySelectorAll("tr")].slice(3).map((row) => [...row.children]);
+  const rows = Array.from(testTable.querySelectorAll("tr"))
+    .slice(3)
+    .map((row) => [...row.children]);
   const submissions: Submission[] = [];
   for (const row of rows) {
     const id = row[0].textContent!;
@@ -75,6 +78,11 @@ export async function parseData(html: string) {
       }
     });
     submissions.push({ id, score, results });
+  }
+
+  // update passing
+  for (const test of testCases) {
+    test.passing = submissions.filter((s) => s.results[testCases.indexOf(test)] === SubmissionResult.Passed).length;
   }
 
   return { testCases, submissions, generatedTime };

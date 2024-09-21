@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@solid-primitives/date": "^2.0.19",
+    "@solid-primitives/set": "^0.4.12",
     "@solidjs/router": "^0.10.10",
     "@solidjs/start": "^0.4.11",
     "autoprefixer": "^10.4.17",

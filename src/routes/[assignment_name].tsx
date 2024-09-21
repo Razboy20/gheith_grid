@@ -1,14 +1,5 @@
-import {
-  RouteDefinition,
-  RouteLoadFuncArgs,
-  RouteProps,
-  RouteSectionProps,
-  RouterProps,
-  cache,
-  createAsync,
-  useParams,
-} from "@solidjs/router";
-import { Show, Suspense, createEffect, createResource } from "solid-js";
+import { RouteDefinition, RouteLoadFuncArgs, RouteSectionProps, createAsync } from "@solidjs/router";
+import { Show, Suspense } from "solid-js";
 import { getRequestEvent, isServer } from "solid-js/web";
 import Table from "~/components/Table";
 import { parseData } from "~/util/parseData";
@@ -35,7 +26,7 @@ export default function Home(props: RouteSectionProps<ReturnType<typeof route.lo
   const siteData = createAsync(() => props.data!);
 
   return (
-    <div class="w-fit p-4">
+    <div class="w-fit">
       <Suspense fallback="Loading...">
         <Show when={siteData()}>
           {(data) => (
