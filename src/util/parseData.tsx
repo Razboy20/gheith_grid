@@ -30,11 +30,12 @@ export async function parseData(html: string) {
   } else {
     root = new DOMParser().parseFromString(html, "text/html");
   }
-  const generatedTime = new Date(
-    root.querySelector(
-      "body > table > tbody > tr:nth-child(2) > td > table > tbody > tr:nth-child(1) > td:nth-child(2)"
-    )!.textContent!
-  );
+
+  const extractedDate = root.querySelector(
+    "body > table > tbody > tr:nth-child(2) > td > table > tbody > tr:nth-child(1) > td:nth-child(2)"
+  )!.textContent!;
+
+  const generatedTime = new Date(extractedDate.match(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}/)![0]);
 
   const testTable = root.querySelectorAll("table")[2]!;
   const inputTestEls = testTable.querySelectorAll("tr:nth-child(1) a");

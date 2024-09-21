@@ -143,7 +143,13 @@ export default function Table(props: TableProps) {
         <tbody>
           <For each={restSubmissions()}>
             {(submission) => (
-              <tr class="even:bg-gray-100 odd:bg-white last-children:pr-4">
+              <tr
+                class={`last-children:pr-4 ${
+                  pinnedSubmissions().length % 2 == 0
+                    ? "even:bg-gray-100 odd:bg-white"
+                    : "odd:bg-gray-100 even:bg-white"
+                }`}
+              >
                 <td class="pl-4">
                   <input
                     type="checkbox"
