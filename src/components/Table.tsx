@@ -56,7 +56,6 @@ export default function Table(props: TableProps) {
   });
 
   createEffect(() => {
-    console.log("updating");
     localStorage.setItem("pinnedSubmissions", JSON.stringify(Array.from(pinnedSubmissionIds)));
   });
 

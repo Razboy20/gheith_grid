@@ -205,3 +205,4 @@ functions/
 .vercel
 .vinxi/
 .output/
+app.config.timestamp_*.js

@@ -1,19 +1,21 @@
-// @refresh reload
-import { Router } from "@solidjs/router";
-import { FileRoutes } from "@solidjs/start";
-import { Suspense } from "solid-js";
-
 import "@unocss/reset/tailwind-compat.css";
 import "virtual:uno.css";
 
-export default function App() {
+// @refresh reload
+import { Router } from "@solidjs/router";
+import { FileRoutes } from "@solidjs/start/router";
+import { Suspense } from "solid-js";
+
+export default function Root() {
   return (
     <Router
-      root={(props) => (
-        <>
-          <Suspense>{props.children}</Suspense>
-        </>
-      )}
+      root={(props) => {
+        return (
+          <>
+            <Suspense>{props.children}</Suspense>
+          </>
+        );
+      }}
     >
       <FileRoutes />
     </Router>
