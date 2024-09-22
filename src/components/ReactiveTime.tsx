@@ -26,7 +26,7 @@ export const ReactiveTime: VoidComponent<ReactiveTimeProps> = (props) => {
     // otherwise, show the full date
     const now = new Date();
     const diff = props.time.getDate() - now.getDate();
-    if (diff > 0 && diff < 7) {
+    if (diff >= 0 && diff < 7) {
       return props.time.toLocaleDateString(undefined, { weekday: "long" });
     }
     return props.time.toLocaleDateString();
@@ -35,7 +35,7 @@ export const ReactiveTime: VoidComponent<ReactiveTimeProps> = (props) => {
   return (
     <span>
       {capitalize(timeAgo())} (<Show when={showDate}>{dateString()}, </Show>
-      {props.time.toLocaleTimeString()})
+      {props.time.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })})
     </span>
   );
 };

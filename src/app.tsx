@@ -5,16 +5,18 @@ import "virtual:uno.css";
 import { Router } from "@solidjs/router";
 import { FileRoutes } from "@solidjs/start/router";
 import { Suspense } from "solid-js";
+import { FastSpinner } from "./components/Spinner";
 import { ThemeProvider } from "./components/ThemeController";
 
 export default function Root() {
   return (
     <ThemeProvider>
       <Router
+        explicitLinks
         root={(props) => {
           return (
             <>
-              <Suspense>{props.children}</Suspense>
+              <Suspense fallback={<FastSpinner class="w-6 h-6 m-4" show />}>{props.children}</Suspense>
             </>
           );
         }}
