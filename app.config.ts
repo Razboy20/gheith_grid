@@ -13,7 +13,7 @@ export default defineConfig({
   ssr: false,
   vite: {
     define: {
-      "process.env.BASE_URL": JSON.stringify(process.env.BASE_URL),
+      "process.env.VITE_BASE_URL": JSON.stringify(env.VITE_BASE_URL),
     },
     plugins: [
       Icons({ compiler: "solid" }), UnoCSS(),

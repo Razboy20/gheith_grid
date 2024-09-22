@@ -10,6 +10,9 @@ export interface MatrixData {
     enrolled: number;
     submissions: number;
   };
+  meta: {
+    title: string;
+  };
 }
 
 export interface Test {
@@ -108,5 +111,12 @@ export async function parseData(html: string) {
     submissions: parseInt(root.querySelector("body > table > tbody > tr:nth-child(6)")!.textContent!),
   };
 
-  return { testCases, submissions, generatedTime, testCutoff, codeCutoff, statistics };
+  const rawTitle = root.querySelector("title")!.textContent!;
+  const [course, semester, project] = rawTitle.split("_");
+
+  const meta = {
+    title: `${course.toUpperCase()} ${project} Matrix`,
+  };
+
+  return { testCases, submissions, generatedTime, testCutoff, codeCutoff, statistics, meta } as MatrixData;
 }

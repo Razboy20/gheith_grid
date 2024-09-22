@@ -2,6 +2,7 @@ import "@unocss/reset/tailwind-compat.css";
 import "virtual:uno.css";
 
 // @refresh reload
+import { MetaProvider, Title } from "@solidjs/meta";
 import { Router } from "@solidjs/router";
 import { FileRoutes } from "@solidjs/start/router";
 import { Suspense } from "solid-js";
@@ -15,9 +16,10 @@ export default function Root() {
         explicitLinks
         root={(props) => {
           return (
-            <>
+            <MetaProvider>
+              <Title>Matrix</Title>
               <Suspense fallback={<FastSpinner class="w-6 h-6 m-4" show />}>{props.children}</Suspense>
-            </>
+            </MetaProvider>
           );
         }}
       >
