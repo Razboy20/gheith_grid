@@ -2,6 +2,7 @@ import { RouteDefinition, RouteSectionProps, createAsync, type RoutePreloadFuncA
 import { Show, Suspense } from "solid-js";
 import { getRequestEvent, isServer } from "solid-js/web";
 import { ReactiveTime } from "~/components/ReactiveTime";
+import { FastSpinner } from "~/components/Spinner";
 import Table from "~/components/Table";
 import { ThemeControllerButton } from "~/components/ThemeController";
 import { parseData } from "~/util/parseData";
@@ -40,7 +41,7 @@ export default function Home(props: RouteSectionProps<ReturnType<typeof route.pr
 
   return (
     <div class="w-fit">
-      <Suspense fallback="Loading...">
+      <Suspense fallback={<FastSpinner class="w-6 h-6 m-4" show />}>
         <Show when={siteData()}>
           {(data) => (
             <div class="flex flex-row gap-4 p-4">
