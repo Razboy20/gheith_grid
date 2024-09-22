@@ -3,7 +3,6 @@ import presetWebFonts from "@unocss/preset-web-fonts";
 import transformerDirectives from "@unocss/transformer-directives";
 import transformerVariantGroup from "@unocss/transformer-variant-group";
 import { defineConfig, presetTypography } from "unocss";
-import { presetKobalte } from "unocss-preset-primitives";
 import { theme } from "unocss/preset-mini";
 
 export default defineConfig({
@@ -51,16 +50,6 @@ export default defineConfig({
 
   presets: [
     presetUno(),
-    presetKobalte(),
-    // presetRadix({
-    //   palette: ["blue", "green", "red", "slate"],
-    //   darkSelector: ".dark",
-    //   aliases: {
-    //     primary: "blue",
-    //     base: "slate",
-    //   },
-    //   extend: true,
-    // }) as Preset,
     presetWebFonts({
       provider: "google",
       fonts: {

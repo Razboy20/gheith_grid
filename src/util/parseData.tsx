@@ -1,5 +1,17 @@
 import { isServer } from "solid-js/web";
 
+export interface MatrixData {
+  testCases: Test[];
+  submissions: Submission[];
+  generatedTime: Date;
+  testCutoff: Date;
+  codeCutoff: Date;
+  statistics: {
+    enrolled: number;
+    submissions: number;
+  };
+}
+
 export interface Test {
   name: string;
   fileName: string;
@@ -22,6 +34,11 @@ export interface Submission {
   results: SubmissionResult[];
 }
 
+function parseMatrixDate(html: string) {
+  const date = html.match(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}/)![0];
+  return new Date(date);
+}
+
 export async function parseData(html: string) {
   // parse html structure
   let root;
@@ -31,11 +48,11 @@ export async function parseData(html: string) {
     root = new DOMParser().parseFromString(html, "text/html");
   }
 
-  const extractedDate = root.querySelector(
-    "body > table > tbody > tr:nth-child(2) > td > table > tbody > tr:nth-child(1) > td:nth-child(2)"
-  )!.textContent!;
-
-  const generatedTime = new Date(extractedDate.match(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}/)![0]);
+  const generatedTime = parseMatrixDate(
+    root.querySelector("table table tr:nth-child(1) td:nth-child(2)")!.textContent!
+  );
+  const testCutoff = parseMatrixDate(root.querySelector("table table tr:nth-child(2) td:nth-child(2)")!.textContent!);
+  const codeCutoff = parseMatrixDate(root.querySelector("table table tr:nth-child(3) td:nth-child(2)")!.textContent!);
 
   const testTable = root.querySelectorAll("table")[2]!;
   const inputTestEls = testTable.querySelectorAll("tr:nth-child(1) a");
@@ -86,5 +103,10 @@ export async function parseData(html: string) {
     test.passing = submissions.filter((s) => s.results[testCases.indexOf(test)] === SubmissionResult.Passed).length;
   }
 
-  return { testCases, submissions, generatedTime };
+  const statistics = {
+    enrolled: parseInt(root.querySelector("body > table > tbody > tr:nth-child(5)")!.textContent!),
+    submissions: parseInt(root.querySelector("body > table > tbody > tr:nth-child(6)")!.textContent!),
+  };
+
+  return { testCases, submissions, generatedTime, testCutoff, codeCutoff, statistics };
 }
