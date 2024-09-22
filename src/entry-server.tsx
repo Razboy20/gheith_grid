@@ -19,7 +19,7 @@ export default createHandler((ctx) => {
             ></script>
             {assets}
           </head>
-          <body class="font-sans min-h-screen bg-neutral-50 transition-colors duration-100 dark:bg-neutral-900 dark:text-neutral-100 text-neutral-950">
+          <body class="font-sans min-w-fit min-h-screen bg-neutral-50 transition-colors duration-100 dark:bg-neutral-900 dark:text-neutral-100 text-neutral-950">
             <div id="app">{children}</div>
             {scripts}
           </body>

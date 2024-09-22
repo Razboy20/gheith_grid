@@ -1,6 +1,7 @@
+import { makePersisted } from "@solid-primitives/storage";
 import { Title } from "@solidjs/meta";
-import { RouteDefinition, RouteSectionProps, createAsync, type RoutePreloadFuncArgs } from "@solidjs/router";
-import { Show } from "solid-js";
+import { createAsync, RouteDefinition, RouteSectionProps, type RoutePreloadFuncArgs } from "@solidjs/router";
+import { createEffect, createSignal, onMount, Show } from "solid-js";
 import { getRequestEvent, isServer } from "solid-js/web";
 import { ReactiveTime } from "~/components/ReactiveTime";
 import Table from "~/components/Table";
@@ -39,33 +40,67 @@ export const route = {
 export default function Home(props: RouteSectionProps<ReturnType<typeof route.preload>>) {
   const siteData = createAsync(() => props.data!);
 
+  // pink easter egg
+  const [pinkMode, setPinkMode] = makePersisted(createSignal(false));
+
+  // if user types "p i n k" turn on pink mode
+  const [typed, setTyped] = createSignal("");
+
+  onMount(() => {
+    window.addEventListener("keydown", (e) => {
+      const typedValue = typed();
+      if (typedValue.length >= 4) {
+        setTyped("");
+      } else if (e.key === "p" || e.key === "i" || e.key === "n" || e.key === "k") {
+        setTyped(typedValue + e.key);
+      } else {
+        setTyped("");
+      }
+    });
+  });
+
+  createEffect(() => {
+    if (typed() === "pink") {
+      setPinkMode((pink) => !pink);
+      setTyped("");
+    }
+  });
+
   return (
-    <div class="w-fit">
-      <Show when={siteData()}>
-        {(data) => (
-          <>
-            <Title>{data().meta.title}</Title>
-            <div class="flex flex-row gap-4 p-4">
-              <Table tests={data().testCases} submissions={data().submissions} generatedTime={data().generatedTime} />
-              <div class="relative border-1 border-gray-500 space-y-6 rounded-lg p-4 h-fit bg-white dark:bg-neutral-800 transition-colors duration-100">
-                <div>
-                  <h2 class="font-bold text-2xl mb-2">Information</h2>
-                  <hr class="my-4 border-neutral-400 dark:border-neutral-500 transition-colors duration-100" />
-                  <div class="grid grid-cols-[max-content_1fr] gap-x-4 whitespace-nowrap min-w-50">
-                    <span class="font-semibold">Generated:</span>
-                    <span>
-                      <ReactiveTime time={data().generatedTime} />
-                    </span>
-                    <span class="font-semibold">Test Cutoff:</span>
-                    <span>
-                      <ReactiveTime time={data().testCutoff} />
-                    </span>
-                    <span class="font-semibold">Code Cutoff:</span>
-                    <span>
-                      <ReactiveTime time={data().codeCutoff} />
-                    </span>
-                  </div>
+    <Show when={siteData()}>
+      {(data) => (
+        <>
+          <Title>{data().meta.title}</Title>
+          <div
+            class="flex flex-row gap-4 p-4"
+            classList={{
+              "text-pink": pinkMode(),
+            }}
+          >
+            <Table tests={data().testCases} submissions={data().submissions} generatedTime={data().generatedTime} />
+            <div class="relative border-1 border-gray-500 space-y-6 rounded-lg p-4 h-fit bg-white dark:bg-neutral-800 transition-colors duration-100">
+              <div>
+                <div class="flex flex-row justify-between items-center">
+                  <h2 class="font-bold text-2xl mt-1">Information</h2>
+                  <ThemeControllerButton class="" />
                 </div>
+                <hr class="my-4 border-neutral-400 dark:border-neutral-500 transition-colors duration-100" />
+                <div class="grid grid-cols-[max-content_1fr] gap-x-4 whitespace-nowrap min-w-50">
+                  <span class="font-semibold">Generated:</span>
+                  <span>
+                    <ReactiveTime time={data().generatedTime} />
+                  </span>
+                  <span class="font-semibold">Test Cutoff:</span>
+                  <span>
+                    <ReactiveTime time={data().testCutoff} />
+                  </span>
+                  <span class="font-semibold">Code Cutoff:</span>
+                  <span>
+                    <ReactiveTime time={data().codeCutoff} />
+                  </span>
+                </div>
+              </div>
+              <div class="flex justify-between">
                 <div>
                   <h2 class="font-bold text-xl mb-1">Statistics</h2>
                   <div class="grid grid-cols-[max-content_1fr] gap-x-4">
@@ -88,12 +123,11 @@ export default function Home(props: RouteSectionProps<ReturnType<typeof route.pr
                     <span class="text-amber-500">?</span>
                   </div>
                 </div>
-                <ThemeControllerButton class="absolute right-4 bottom-4" />
               </div>
             </div>
-          </>
-        )}
-      </Show>
-    </div>
+          </div>
+        </>
+      )}
+    </Show>
   );
 }

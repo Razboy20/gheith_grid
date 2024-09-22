@@ -30,4 +30,4 @@ export default function Root() {
 }
 
 // temp fix for entry-server.tsx uno classes not being found properly
-// bg-neutral-50 transition-colors duration-100 dark:bg-neutral-900 dark:text-neutral-100 text-neutral-950
+// font-sans min-w-fit min-h-screen bg-neutral-50 transition-colors duration-100 dark:bg-neutral-900 dark:text-neutral-100 text-neutral-950
