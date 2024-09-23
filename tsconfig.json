@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "strict": true,
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "bundler",
@@ -9,13 +10,19 @@
     "jsxImportSource": "solid-js",
     "allowJs": true,
     "noEmit": true,
-    "strict": true,
     "skipLibCheck": true,
+    "sourceMap": true,
+    "lib": [
+      "ESNext",
+      "dom"
+    ],
     "types": [
-      "vinxi/client",
       "unplugin-icons/types/solid",
+      "vinxi/client",
+      "vite/client",
     ],
     "isolatedModules": true,
+    "baseUrl": "./",
     "paths": {
       "~/*": [
         "./src/*"
@@ -23,9 +30,12 @@
     }
   },
   "include": [
-    "src/**/*",
+    "./src/**/*",
     ".eslintrc.cjs",
     "app.config.ts",
     "unocss.config.ts"
   ],
+  "exclude": [
+    "node_modules",
+  ]
 }

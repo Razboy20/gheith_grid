@@ -1,6 +1,6 @@
 import { ReactiveSet } from "@solid-primitives/set";
 import { For, Show, createEffect, onMount } from "solid-js";
-import { Submission, SubmissionResult, Test } from "~/util/parseData";
+import { ResultStatus, Submission, SubmissionResult, Test } from "~/util/parseData";
 import { ReactiveTime } from "./ReactiveTime";
 // import { JSDOM } from "jsdom";
 
@@ -11,15 +11,15 @@ interface TableProps {
 }
 
 function resultIcon(result: SubmissionResult) {
-  switch (result) {
-    case SubmissionResult.Passed:
+  switch (result.status) {
+    case ResultStatus.Passed:
       return (
         <>
           {/* <div class="absolute pointer-events-none left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-800/50 h-0.5 w-0.5" /> */}
           <span class="block -mt-1.5">.</span>
         </>
       );
-    case SubmissionResult.Failed:
+    case ResultStatus.Failed:
       return (
         <>
           {/* <CrossIcon class="absolute pointer-events-none left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full w-4 h-4" /> */}
@@ -58,9 +58,9 @@ export default function Table(props: TableProps) {
     return (
       <td
         classList={{
-          "text-gray-400": resultProps.result === SubmissionResult.Passed,
-          "text-red-500": resultProps.result === SubmissionResult.Failed,
-          "text-amber-500": resultProps.result === SubmissionResult.Missing,
+          "text-gray-400": resultProps.result.status === ResultStatus.Passed,
+          "text-red-500": resultProps.result.status === ResultStatus.Failed,
+          "text-amber-500": resultProps.result.status === ResultStatus.Missing,
           // todo: don't use opacity
           "bg-green-200/50 dark:bg-green-800/60 transition-colors duration-100":
             props.tests[resultProps.index]?.weight > 0,
@@ -68,7 +68,11 @@ export default function Table(props: TableProps) {
             props.tests[resultProps.index]?.passing < 2,
         }}
       >
-        <div class="text-center relative">{resultIcon(resultProps.result)}</div>
+        {/* <Tooltip as="div" class="text-center relative" placement="top" tooltipText={resultProps.result.title}> */}
+        <div class="text-center relative" title={resultProps.result.title}>
+          {resultIcon(resultProps.result)}
+        </div>
+        {/* </Tooltip> */}
       </td>
     );
   }

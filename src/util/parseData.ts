@@ -24,10 +24,15 @@ export interface Test {
   passing: number;
 }
 
-export enum SubmissionResult {
+export enum ResultStatus {
   Passed = 0,
   Failed = 1,
   Missing = 2,
+}
+
+export interface SubmissionResult {
+  status: ResultStatus;
+  title?: string;
 }
 
 export interface Submission {
@@ -57,7 +62,7 @@ export async function parseData(html: string) {
   const testCutoff = parseMatrixDate(root.querySelector("table table tr:nth-child(2) td:nth-child(2)")!.textContent!);
   const codeCutoff = parseMatrixDate(root.querySelector("table table tr:nth-child(3) td:nth-child(2)")!.textContent!);
 
-  const testTable = root.querySelectorAll("table")[2]!;
+  const testTable = root.querySelector("table.results")!;
   const inputTestEls = testTable.querySelectorAll("tr:nth-child(1) a");
   const outputTestEls = testTable.querySelectorAll("tr:nth-child(2) a");
 
@@ -81,29 +86,38 @@ export async function parseData(html: string) {
   }
 
   // read submissions
-  const rows = Array.from(testTable.querySelectorAll("tr"))
-    .slice(3)
-    .map((row) => [...row.children]);
+  const rows = Array.from(testTable.querySelectorAll("tbody > tr"));
   const submissions: Submission[] = [];
   for (const row of rows) {
-    const id = row[0].textContent!;
-    const score = parseInt(row[1].textContent!);
-    const results = row.slice(2).map((td) => {
+    const children = Array.from(row.children);
+    const id = row.querySelector(".alias")?.textContent!;
+    const score = parseInt(children[1].textContent!);
+    const results = children.slice(isNaN(score) ? 2 : 3).map((td) => {
+      const result: SubmissionResult = {
+        status: ResultStatus.Missing,
+        title: td.attributes.getNamedItem("title")?.value,
+      };
+
       switch (td.textContent) {
         case ".":
-          return SubmissionResult.Passed;
+          result.status = ResultStatus.Passed;
+          break;
         case "X":
-          return SubmissionResult.Failed;
-        default:
-          return SubmissionResult.Missing;
+          result.status = ResultStatus.Failed;
+          break;
+        case "?":
+          result.status = ResultStatus.Missing;
+          break;
       }
+
+      return result;
     });
     submissions.push({ id, score, results });
   }
 
   // update passing
-  for (const test of testCases) {
-    test.passing = submissions.filter((s) => s.results[testCases.indexOf(test)] === SubmissionResult.Passed).length;
+  for (let i = 0; i < testCases.length; i++) {
+    testCases[i].passing = submissions.filter((s) => s.results[i].status === ResultStatus.Passed).length;
   }
 
   const statistics = {
