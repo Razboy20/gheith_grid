@@ -1,0 +1,19 @@
+.tooltip__content {
+  transform-origin: var(--kb-tooltip-content-transform-origin);
+  animation: fadeIn 0ms;
+}
+
+.tooltip__content[data-open] {
+  animation: fadeIn 150ms cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

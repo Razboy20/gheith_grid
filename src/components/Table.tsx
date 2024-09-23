@@ -57,6 +57,7 @@ export default function Table(props: TableProps) {
   function TestResultCell(resultProps: { result: SubmissionResult; index: number }) {
     return (
       <td
+        class="text-center"
         classList={{
           "text-gray-400": resultProps.result.status === ResultStatus.Passed,
           "text-red-500": resultProps.result.status === ResultStatus.Failed,
@@ -69,9 +70,9 @@ export default function Table(props: TableProps) {
         }}
       >
         {/* <Tooltip as="div" class="text-center relative" placement="top" tooltipText={resultProps.result.title}> */}
-        <div class="text-center relative" title={resultProps.result.title}>
-          {resultIcon(resultProps.result)}
-        </div>
+        {/* <div class="text-center relative" title={resultProps.result.title}> */}
+        {resultIcon(resultProps.result)}
+        {/* </div> */}
         {/* </Tooltip> */}
       </td>
     );
