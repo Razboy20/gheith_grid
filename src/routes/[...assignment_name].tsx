@@ -2,7 +2,8 @@ import { makePersisted } from "@solid-primitives/storage";
 import { Title } from "@solidjs/meta";
 import { createAsync, RouteDefinition, RouteSectionProps, type RoutePreloadFuncArgs } from "@solidjs/router";
 import { createEffect, createSignal, onMount, Show } from "solid-js";
-import { getRequestEvent, isServer } from "solid-js/web";
+import { getRequestEvent, isServer, Portal } from "solid-js/web";
+import PinkOverlay from "~/components/PinkOverlay";
 import { ReactiveTime } from "~/components/ReactiveTime";
 import Table from "~/components/Table";
 import { ThemeControllerButton } from "~/components/ThemeController";
@@ -86,10 +87,15 @@ export default function Home(props: RouteSectionProps<ReturnType<typeof route.pr
         {(data) => (
           <>
             <Title>{data().meta.title}</Title>
+            <Show when={pinkMode()}>
+              <Portal>
+                <PinkOverlay />
+              </Portal>
+            </Show>
             <div
               class="flex flex-row gap-4 p-4"
               classList={{
-                "text-pink": pinkMode(),
+                "text-red": pinkMode(),
               }}
             >
               <Table tests={data().testCases} submissions={data().submissions} generatedTime={data().generatedTime} />
@@ -134,6 +140,8 @@ export default function Home(props: RouteSectionProps<ReturnType<typeof route.pr
                       <span class="text-gray-400">.</span>
                       <span class="font-semibold text-red-700 dark:text-red-400">Failed:</span>
                       <span class="text-red-500">x</span>
+                      <span class="font-semibold text-purple-700 dark:text-purple-500">Timed out:</span>
+                      <span class="text-purple-500 dark:text-purple-400">x</span>
                       <span class="font-semibold text-amber-600 dark:text-amber-400">Did not compile:</span>
                       <span class="text-amber-500">?</span>
                     </div>
