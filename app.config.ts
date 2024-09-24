@@ -1,3 +1,4 @@
+import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { defineConfig } from "@solidjs/start/config";
 import UnoCSS from "unocss/vite";
 import Icons from "unplugin-icons/vite";
@@ -16,15 +17,23 @@ export default defineConfig({
       "process.env.VITE_BASE_URL": JSON.stringify(env.VITE_BASE_URL),
     },
     plugins: [
-      Icons({ compiler: "solid" }), UnoCSS(),
+      sentryVitePlugin({
+        org: "razboy20",
+        project: "os-matrix-viewer",
+        telemetry: false,
+        authToken: process.env.SENTRY_AUTH_TOKEN,
+      }),
+      Icons({ compiler: "solid" }),
+      UnoCSS(),
     ],
     ssr: {
-      external: ["jsdom"]
+      external: ["jsdom"],
     },
     build: {
+      sourcemap: true,
       commonjsOptions: {
-        exclude: [/jsdom/]
-      }
-    }
-  }
+        exclude: [/jsdom/],
+      },
+    },
+  },
 });

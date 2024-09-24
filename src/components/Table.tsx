@@ -2,6 +2,7 @@ import { ReactiveSet } from "@solid-primitives/set";
 import { For, Show, createEffect, onMount } from "solid-js";
 import { ResultStatus, Submission, SubmissionResult, Test } from "~/util/parseData";
 import { ReactiveTime } from "./ReactiveTime";
+import { Tooltip } from "./Tooltip";
 // import { JSDOM } from "jsdom";
 
 interface TableProps {
@@ -19,7 +20,8 @@ function resultIcon(result: SubmissionResult) {
           <span class="block -mt-1.5">.</span>
         </>
       );
-    case ResultStatus.Failed:
+    case ResultStatus.TimedOut:
+    case ResultStatus.Diff:
       return (
         <>
           {/* <CrossIcon class="absolute pointer-events-none left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full w-4 h-4" /> */}
@@ -58,9 +60,11 @@ export default function Table(props: TableProps) {
     return (
       <td
         class="text-center"
+        aria-details={resultProps.result.title}
         classList={{
           "text-gray-400": resultProps.result.status === ResultStatus.Passed,
-          "text-red-500": resultProps.result.status === ResultStatus.Failed,
+          "text-red-500": resultProps.result.status === ResultStatus.Diff,
+          "text-purple-500 dark:text-purple-400": resultProps.result.status === ResultStatus.TimedOut,
           "text-amber-500": resultProps.result.status === ResultStatus.Missing,
           // todo: don't use opacity
           "bg-green-200/50 dark:bg-green-800/60 transition-colors duration-100":
@@ -69,11 +73,17 @@ export default function Table(props: TableProps) {
             props.tests[resultProps.index]?.passing < 2,
         }}
       >
-        {/* <Tooltip as="div" class="text-center relative" placement="top" tooltipText={resultProps.result.title}> */}
-        {/* <div class="text-center relative" title={resultProps.result.title}> */}
-        {resultIcon(resultProps.result)}
-        {/* </div> */}
-        {/* </Tooltip> */}
+        <Tooltip
+          as="div"
+          class="text-center relative cursor-auto"
+          placement="top"
+          tooltipText={resultProps.result.title}
+          group="grid"
+        >
+          {/* <div class="text-center relative" title={resultProps.result.title}> */}
+          {resultIcon(resultProps.result)}
+          {/* </div> */}
+        </Tooltip>
       </td>
     );
   }

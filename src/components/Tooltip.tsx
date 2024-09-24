@@ -10,15 +10,16 @@ interface TooltipProps extends CorvuTooltipProps {
   tooltipText: JSX.Element;
   placement?: RootProps["placement"];
   openDelay?: number;
+  group?: string | true;
 }
 
 export const Tooltip: ParentComponent<TooltipProps> = (props) => {
   const [open, setOpen] = createSignal(false);
 
-  const [local, others] = splitProps(props, ["tooltipText", "placement", "openDelay"]);
+  const [local, others] = splitProps(props, ["tooltipText", "placement", "openDelay", "group"]);
 
   return (
-    <CTooltip onOpenChange={setOpen} placement={local.placement} openDelay={local.openDelay}>
+    <CTooltip onOpenChange={setOpen} placement={local.placement} openDelay={local.openDelay} group={local.group}>
       <CTooltip.Anchor>
         <CTooltip.Trigger {...others}></CTooltip.Trigger>
       </CTooltip.Anchor>

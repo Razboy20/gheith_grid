@@ -26,8 +26,9 @@ export interface Test {
 
 export enum ResultStatus {
   Passed = 0,
-  Failed = 1,
-  Missing = 2,
+  Diff = 1,
+  TimedOut = 2,
+  Missing = 3,
 }
 
 export interface SubmissionResult {
@@ -98,16 +99,26 @@ export async function parseData(html: string) {
         title: td.attributes.getNamedItem("title")?.value,
       };
 
+      // [tries, timeTaken]
+      const meta = result.title?.match(/(\d+) tries, last took (\d+)s/);
+
       switch (td.textContent) {
         case ".":
           result.status = ResultStatus.Passed;
           break;
         case "X":
-          result.status = ResultStatus.Failed;
+          result.status = ResultStatus.Diff;
           break;
         case "?":
           result.status = ResultStatus.Missing;
           break;
+      }
+
+      if (result.status === ResultStatus.Diff && meta) {
+        const timeTaken = parseInt(meta[2]);
+        if (timeTaken > 10) {
+          result.status = ResultStatus.TimedOut;
+        }
       }
 
       return result;
