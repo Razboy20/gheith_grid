@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/solidstart";
 import { isServer } from "solid-js/web";
 
 export interface MatrixData {
@@ -100,7 +101,7 @@ export async function parseData(html: string) {
       };
 
       // [tries, timeTaken]
-      const meta = result.title?.match(/(\d+) tries, last took (\d+)s/);
+      const meta = result.title?.match(/(\d+) tries, last took (\d+.?\d*)s/);
 
       switch (td.textContent) {
         case ".":
@@ -109,9 +110,19 @@ export async function parseData(html: string) {
         case "X":
           result.status = ResultStatus.Diff;
           break;
+        case "T":
+          result.status = ResultStatus.TimedOut;
+          break;
         case "?":
           result.status = ResultStatus.Missing;
           break;
+        default:
+          console.error("Failed to match", td.textContent);
+          Sentry.captureMessage(`Failed to match ${td.textContent}`, {
+            extra: {
+              title: result.title,
+            },
+          });
       }
 
       if (result.status === ResultStatus.Diff && meta) {

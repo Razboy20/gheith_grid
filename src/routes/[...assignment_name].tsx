@@ -60,22 +60,24 @@ export default function Home(props: RouteSectionProps<ReturnType<typeof route.pr
 
   // if user types "p i n k" turn on pink mode
   const [typed, setTyped] = createSignal("");
+  const validActivators = ["pink"];
 
   onMount(() => {
     window.addEventListener("keydown", (e) => {
       const typedValue = typed();
-      if (typedValue.length >= 4) {
+      const key = e.key.toLowerCase();
+
+      const newValue = typedValue + key;
+      if (!validActivators.some((a) => a.startsWith(newValue))) {
         setTyped("");
-      } else if (e.key === "p" || e.key === "i" || e.key === "n" || e.key === "k") {
-        setTyped(typedValue + e.key);
       } else {
-        setTyped("");
+        setTyped(newValue);
       }
     });
   });
 
   createEffect(() => {
-    if (typed() === "pink") {
+    if (validActivators.some((a) => a == typed())) {
       setPinkMode((pink) => !pink);
       setTyped("");
     }
