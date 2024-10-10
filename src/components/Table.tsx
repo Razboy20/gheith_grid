@@ -1,4 +1,5 @@
 import { ReactiveSet } from "@solid-primitives/set";
+import { useParams } from "@solidjs/router";
 import { For, Show, createEffect, onMount } from "solid-js";
 import { ResultStatus, Submission, SubmissionResult, Test } from "~/util/parseData";
 import { ReactiveTime } from "./ReactiveTime";
@@ -33,7 +34,13 @@ function resultIcon(result: SubmissionResult) {
   }
 }
 
+const trimCommitHash = (id: string) => id.split("_")[0];
+
 export default function Table(props: TableProps) {
+  const params = useParams();
+  const projectIdentifier = params.assignment_name.replace(/.html$/, "");
+  const localStorageKey = `pinnedSubmissions.${projectIdentifier}`;
+
   const avgScore = () => {
     return props.submissions.reduce((acc, sub) => acc + sub.score, 0) / props.submissions.length;
   };
@@ -41,19 +48,36 @@ export default function Table(props: TableProps) {
 
   const pinnedSubmissionIds = new ReactiveSet<string>();
   const pinnedSubmissions = () => {
-    return props.submissions.filter(({ id }) => pinnedSubmissionIds.has(id));
+    return props.submissions.filter(({ id }) => pinnedSubmissionIds.has(trimCommitHash(id)));
   };
   const restSubmissions = () => {
-    return props.submissions.filter(({ id }) => !pinnedSubmissionIds.has(id));
+    return props.submissions.filter(({ id }) => !pinnedSubmissionIds.has(trimCommitHash(id)));
+  };
+
+  const pinSubmission = (id: string) => {
+    pinnedSubmissionIds.add(trimCommitHash(id));
+  };
+  const unpinSubmission = (id: string) => {
+    pinnedSubmissionIds.delete(trimCommitHash(id));
+  };
+
+  const togglePin = (id: string) => {
+    id = trimCommitHash(id);
+
+    if (pinnedSubmissionIds.has(id)) {
+      unpinSubmission(id);
+    } else {
+      pinSubmission(id);
+    }
   };
 
   onMount(() => {
-    const savedIds = new Set<string>(JSON.parse(localStorage.getItem("pinnedSubmissions") || "[]"));
-    savedIds.forEach((id) => pinnedSubmissionIds.add(id));
+    const savedIds = new Set<string>(JSON.parse(localStorage.getItem(localStorageKey) || "[]"));
+    savedIds.forEach((trimmedId) => pinnedSubmissionIds.add(trimmedId));
   });
 
   createEffect(() => {
-    localStorage.setItem("pinnedSubmissions", JSON.stringify(Array.from(pinnedSubmissionIds)));
+    localStorage.setItem(localStorageKey, JSON.stringify(Array.from(pinnedSubmissionIds)));
   });
 
   function TestResultCell(resultProps: { result: SubmissionResult; index: number }) {
@@ -136,17 +160,7 @@ export default function Table(props: TableProps) {
           {(submission) => (
             <tr class="even:bg-gray-300 odd:bg-gray-200 dark:even:bg-neutral-700 dark:odd:bg-neutral-800 transition-colors duration-100">
               <td class="pl-4">
-                <input
-                  type="checkbox"
-                  checked
-                  onChange={(e) => {
-                    if (e.currentTarget.checked) {
-                      pinnedSubmissionIds.add(submission.id);
-                    } else {
-                      pinnedSubmissionIds.delete(submission.id);
-                    }
-                  }}
-                />
+                <input type="checkbox" checked onChange={[togglePin, submission.id]} />
               </td>
               <td class="px-4 font-mono">{submission.id}</td>
               {/* <td>{submission.score}</td> */}
@@ -166,16 +180,7 @@ export default function Table(props: TableProps) {
               }`}
             >
               <td class="pl-4">
-                <input
-                  type="checkbox"
-                  onChange={(e) => {
-                    if (e.currentTarget.checked) {
-                      pinnedSubmissionIds.add(submission.id);
-                    } else {
-                      pinnedSubmissionIds.delete(submission.id);
-                    }
-                  }}
-                />
+                <input type="checkbox" onChange={[togglePin, submission.id]} />
               </td>
               <td class="px-4 font-mono">{submission.id}</td>
               {/* <td>{submission.score}</td> */}
