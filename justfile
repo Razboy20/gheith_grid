@@ -6,7 +6,7 @@ export NODE_ENV := "production"
 build:
   @echo "VITE_BASE_URL is: '${VITE_BASE_URL}'"
   @echo "Building..."
-  pnpm run build
+  bun run build
 
 
 # Deploy to production
