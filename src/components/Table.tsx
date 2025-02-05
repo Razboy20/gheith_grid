@@ -113,10 +113,10 @@ export default function Table(props: TableProps) {
   }
 
   return (
-    <table class="border-separate border-spacing-0 rounded-lg contain-paint border-gray-500 border-1">
+    <table class="h-fit border-separate border-spacing-0 rounded-lg contain-paint border-gray-500 border-1">
       <thead class="sticky top-0 bg-gray-200 dark:bg-neutral-800 transition-colors duration-100 z-5 [&>*:last-child>*]:(border-b-1 border-b-gray-500) last-children:children:pr-4">
         <tr class="children:pt-1">
-          <th colspan="9999">
+          <th colspan="9999" class="px-4">
             Generated <ReactiveTime time={props.generatedTime} />
             <Show when={!isNaN(avgScore())}>, avg score: {Math.round(avgScore() * 10) / 10}</Show>
           </th>
@@ -162,7 +162,9 @@ export default function Table(props: TableProps) {
               <td class="pl-4">
                 <input type="checkbox" checked onChange={[togglePin, submission.id]} />
               </td>
-              <td class="px-4 font-mono">{submission.id}</td>
+              <td class={`px-4 font-mono ${submission.staff ? "text-yellow-600 dark:text-yellow-300" : ""}`}>
+                {submission.id}
+              </td>
               {/* <td>{submission.score}</td> */}
               <For each={submission.results}>{(result, i) => <TestResultCell result={result} index={i()} />}</For>
             </tr>
@@ -182,7 +184,9 @@ export default function Table(props: TableProps) {
               <td class="pl-4">
                 <input type="checkbox" onChange={[togglePin, submission.id]} />
               </td>
-              <td class="px-4 font-mono">{submission.id}</td>
+              <td class={`px-4 font-mono ${submission.staff ? "text-yellow-600 dark:text-yellow-300" : ""}`}>
+                {submission.id}
+              </td>
               {/* <td>{submission.score}</td> */}
               <For each={submission.results}>{(result, i) => <TestResultCell result={result} index={i()} />}</For>
             </tr>

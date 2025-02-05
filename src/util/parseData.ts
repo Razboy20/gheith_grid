@@ -39,6 +39,7 @@ export interface SubmissionResult {
 
 export interface Submission {
   id: string;
+  staff: boolean;
   score: number;
   pinned?: boolean;
   results: SubmissionResult[];
@@ -93,6 +94,8 @@ export async function parseData(html: string) {
   for (const row of rows) {
     const children = Array.from(row.children);
     const id = row.querySelector(".alias")?.textContent!;
+    // TA's & Gheith have this class
+    const staff = row.classList.contains("mine");
     const score = parseInt(children[1].textContent!);
     const results = children.slice(isNaN(score) ? 2 : 3).map((td) => {
       const result: SubmissionResult = {
@@ -134,7 +137,7 @@ export async function parseData(html: string) {
 
       return result;
     });
-    submissions.push({ id, score, results });
+    submissions.push({ id, score, results, staff });
   }
 
   // update passing
